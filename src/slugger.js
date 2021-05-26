@@ -46,8 +46,8 @@ export default function runGame(canvas, gameSize = config.gameSize) {
     return {
       color: color,
       direction: "north",
-      bellyPositions: [], //new
-      isDigesting: false, //new
+      bellyPositions: [],
+      isDigesting: false,
       segmentPositions: [
         [x, y],
         [x, y + 1],
@@ -56,9 +56,9 @@ export default function runGame(canvas, gameSize = config.gameSize) {
       update: function () {
         this.checkCollision();
         this.moveSlug();
-        this.handleDigestion(); //<<NEw
+        this.handleDigestion();
         this.drawSlug();
-        this.drawBelly(); //<new
+        this.drawBelly();
       },
       drawSlug: function () {
         ctx.strokeStyle = this.color;
@@ -66,6 +66,7 @@ export default function runGame(canvas, gameSize = config.gameSize) {
         ctx.lineCap = "round";
         ctx.lineJoin = "round";
         ctx.beginPath();
+
         this.segmentPositions.forEach((segmentPosition, index) => {
           const position = cellPosToCanvasPos(segmentPosition);
           if (index === 0) {
@@ -77,7 +78,6 @@ export default function runGame(canvas, gameSize = config.gameSize) {
         ctx.stroke();
       },
       drawBelly: function () {
-        //<<new
         if (this.isDigesting) {
           ctx.fillStyle = this.color;
           this.bellyPositions.forEach(position => {
@@ -135,18 +135,16 @@ export default function runGame(canvas, gameSize = config.gameSize) {
           nextPosition[1] > numOfCells - 1;
         const collideWithSnack =
           nextPosition[0] === snack.position[0] &&
-          nextPosition[1] === snack.position[1]; //<PART 5
+          nextPosition[1] === snack.position[1];
 
         if (collideWithSelf || collideWithEdge) {
           isPaused = true;
           gameOver();
         } else if (collideWithSnack) {
-          //<PART 5
           this.handleEatSnack();
         }
       },
       handleEatSnack: function () {
-        //NEW
         this.bellyPositions.push(snack.position);
         this.isDigesting = true;
         snack.handleEaten();
@@ -162,7 +160,6 @@ export default function runGame(canvas, gameSize = config.gameSize) {
         }
       },
       handleDigestion: function () {
-        //<<New
         if (this.isDigesting) {
           const tempPositions = [...this.bellyPositions];
           tempPositions.forEach(position => {

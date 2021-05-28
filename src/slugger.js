@@ -1,5 +1,9 @@
 import config from "./config";
 
+const PI = Math.PI;
+const TWOPI = 2 * Math.PI;
+const HALFPI = PI / 2;
+
 export default function runGame(
   canvas,
   gameSize = config.gameSize,
@@ -20,7 +24,7 @@ export default function runGame(
       window.innerWidth < window.innerHeight
         ? window.innerWidth
         : window.innerHeight;
-    return size * 0.9;
+    return size * 0.8;
   }
 
   function resizeCanvas() {
@@ -54,6 +58,7 @@ export default function runGame(
       direction: "north",
       bellyPositions: [],
       isDigesting: false,
+      mouthOpen: false,
       segmentPositions: [
         [x, y],
         [x, y + 1],
@@ -68,21 +73,25 @@ export default function runGame(
         this.drawHead();
       },
       drawSlug: function () {
+        const minWidth = scale * 0.5;
+        const maxWidth = scale * 0.8;
+        const widthInc = (maxWidth - minWidth) / this.segmentPositions.length;
+        let width = maxWidth;
         ctx.strokeStyle = this.color;
-        ctx.lineWidth = scale * 0.8;
+        ctx.lineWidth = maxWidth;
         ctx.lineCap = "round";
         ctx.lineJoin = "round";
         ctx.beginPath();
 
+        //ctx.moveTo(this.segmentPositions[0][0], this.segmentPositions[0][1]);
         this.segmentPositions.forEach((segmentPosition, index) => {
           const position = cellPosToCanvasPos(segmentPosition);
-          if (index === 0) {
-            ctx.moveTo(position[0], position[1]);
-          } else {
-            ctx.lineTo(position[0], position[1]);
-          }
+          width -= widthInc;
+          ctx.lineWidth = width;
+          ctx.lineTo(position[0], position[1]);
+          ctx.stroke();
+          ctx.moveTo(position[0], position[1]);
         });
-        ctx.stroke();
       },
       drawHead: function () {
         const position = cellPosToCanvasPos(this.segmentPositions[0]);
@@ -102,6 +111,33 @@ export default function runGame(
         ctx.lineTo(x, y);
         ctx.lineTo(x - xTip, y - yTip);
         ctx.stroke();
+
+        let headArcStart = 0;
+        let headArcEnd = TWOPI;
+
+        const mouthAngle = 0.5;
+
+        /*         if (this.mouthOpen) {
+          this.mouthOpen = false;
+          switch (this.direction) {
+            case "north":
+              headArcStart = -1 * HALFPI - mouthAngle;
+              headArcEnd = -1 * HALFPI + mouthAngle;
+            default:
+              break;
+            case "south":
+              break;
+            case "east":
+              break;
+            case "west":
+              break;
+          }
+        } */
+
+        ctx.fillStyle = this.color;
+        ctx.beginPath();
+        ctx.arc(x, y, scale * 0.55, headArcStart, headArcEnd);
+        ctx.fill();
       },
       drawBelly: function () {
         if (this.isDigesting) {
@@ -109,7 +145,7 @@ export default function runGame(
           this.bellyPositions.forEach(position => {
             position = cellPosToCanvasPos(position);
             ctx.beginPath();
-            ctx.arc(position[0], position[1], scale * 0.5, 0, 2 * Math.PI);
+            ctx.arc(position[0], position[1], scale * 0.42, 0, TWOPI);
             ctx.fill();
           });
         }
@@ -173,6 +209,7 @@ export default function runGame(
       handleEatSnack: function () {
         this.bellyPositions.push(snack.position);
         this.isDigesting = true;
+        this.mouthOpen = true;
         snack.handleEaten();
       },
       handleMovementInput: function (direction) {
@@ -233,7 +270,7 @@ export default function runGame(
 
         ctx.fillStyle = this.color;
         ctx.beginPath();
-        ctx.arc(position[0], position[1], scale * 0.3, 0, 2 * Math.PI);
+        ctx.arc(position[0], position[1], scale * 0.3, 0, TWOPI);
         ctx.fill();
       },
       handleEaten: function () {

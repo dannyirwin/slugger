@@ -2,10 +2,10 @@ import About from "./About";
 import Game from "./Game";
 import Instructions from "./Instructions";
 
-export default function Main() {
+export default function Main({ setMovementButtons }) {
   return (
     <main>
-      <Instructions />
+      <Instructions setMovementButtons={setMovementButtons} />
       <Game />
       <About />
     </main>

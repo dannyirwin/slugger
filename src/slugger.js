@@ -1,6 +1,13 @@
 import config from "./config";
 
-export default function runGame(canvas, gameSize = config.gameSize) {
+export default function runGame(
+  canvas,
+  gameSize = config.gameSize,
+  upBtn,
+  downBtn,
+  leftBtn,
+  rightBtn
+) {
   const ctx = canvas.getContext("2d");
   const responsiveSize = config.responsiveSize;
   const numOfCells = config.numOfCells;
@@ -13,7 +20,6 @@ export default function runGame(canvas, gameSize = config.gameSize) {
       window.innerWidth < window.innerHeight
         ? window.innerWidth
         : window.innerHeight;
-    console.log(window.innerWidth, window.innerHeight, size);
     return size * 0.9;
   }
 
@@ -59,6 +65,7 @@ export default function runGame(canvas, gameSize = config.gameSize) {
         this.handleDigestion();
         this.drawSlug();
         this.drawBelly();
+        this.drawHead();
       },
       drawSlug: function () {
         ctx.strokeStyle = this.color;
@@ -75,6 +82,25 @@ export default function runGame(canvas, gameSize = config.gameSize) {
             ctx.lineTo(position[0], position[1]);
           }
         });
+        ctx.stroke();
+      },
+      drawHead: function () {
+        const position = cellPosToCanvasPos(this.segmentPositions[0]);
+        const x = position[0];
+        const y = position[1];
+        const antennaLen = scale;
+
+        const angle = this.direction === "south" ? -2 : 2;
+
+        ctx.beginPath();
+        ctx.lineWidth = scale * 0.1;
+
+        let xTip = antennaLen * Math.cos(angle);
+        let yTip = antennaLen * Math.sin(angle);
+
+        ctx.moveTo(x + xTip, y - yTip);
+        ctx.lineTo(x, y);
+        ctx.lineTo(x - xTip, y - yTip);
         ctx.stroke();
       },
       drawBelly: function () {
@@ -289,4 +315,22 @@ export default function runGame(canvas, gameSize = config.gameSize) {
         break;
     }
   });
+
+  if (upBtn && downBtn && leftBtn && rightBtn) {
+    upBtn.addEventListener("click", () => {
+      slug.handleMovementInput("north");
+    });
+
+    downBtn.addEventListener("click", () => {
+      slug.handleMovementInput("south");
+    });
+
+    leftBtn.addEventListener("click", () => {
+      slug.handleMovementInput("west");
+    });
+
+    rightBtn.addEventListener("click", () => {
+      slug.handleMovementInput("east");
+    });
+  }
 }

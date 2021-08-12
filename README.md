@@ -1,7 +1,7 @@
 # Welcome to SLUGGER!
 
 This project is the repo for a Browser Game for Beginners tutorial written as a
-series of blog posts. It was createing during the first couple weeks of a
+series of blog posts. It was created during the first couple weeks of a
 Software Developer Bootcamp with Flatiron School as a daily side project in the
 mornings before classes. Using only vanilla JavaScript, it was built to be a
 bare bones example to walk a reader through some basic features. I modeled it
